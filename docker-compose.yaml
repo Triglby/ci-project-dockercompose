@@ -1,0 +1,69 @@
+version: '3.7'
+services:
+  mongo:
+    images: mongo:latest
+    container_name: mongo
+    volumes:
+      - type: volume
+        source: mongo
+        target: /data/db
+  gateway:
+    image: triglby/gateway
+    ports:
+    - target: 80
+      published: 80
+    depends_on:
+    - dashboard-client
+    - dashboard-service
+    - authentication-client
+    - authentication-service
+  dashboard-client:
+    image: triglby/dashboard-client
+  authentication-client:
+    image: triglby/authentication-client
+  aes-encryption-service:
+    image: triglby/aes-encryption-service
+  mongo-service:
+    image: triglby/mongo-service
+    depends_on:
+    - mongo
+  secret-service:
+    image: triglby/secret-service
+    depends_on:
+    - mongo-service
+  email-service:
+    image: triglby/email-service
+    environment:
+      GMAIL_USER: ${GMAIL_USER}
+      GMAIL_PASS: ${GMAIL_PASS}
+      SERVICE_NAME: ${SERVICE_NAME}
+    depends_on:
+    - mongo-service
+    - aes-encryption-service
+  dashboard-service:
+    image: triglby/dashboard-service
+    depends_on:
+    - account-service
+    - session-token-service
+  account-service:
+    image: triglby/account-service
+    depends_on:
+    - secret-service
+    - mongo-service
+  session-token-service:
+    image: triglby/session-token-service
+    depends_on:
+    - mongo-service
+    - aes-encryption-service
+  authentication-service:
+    image: triglby/authentication-service
+    environment:
+      ACTIVATION_LINK: ${ACTIVATION_LINK}
+    depends_on:
+    - account-service
+    - email-service
+    - session-token-service
+  role-service:
+    image: triglby/role-service
+  group-service:
+    image: triglby/group-service
