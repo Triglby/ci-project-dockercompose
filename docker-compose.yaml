@@ -67,3 +67,5 @@ services:
     image: triglby/role-service
   group-service:
     image: triglby/group-service
+volumes:
+mongo:
