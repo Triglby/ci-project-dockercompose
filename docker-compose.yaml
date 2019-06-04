@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   mongo:
-    images: mongo:latest
+    image: mongo:latest
     container_name: mongo
     volumes:
       - type: volume
