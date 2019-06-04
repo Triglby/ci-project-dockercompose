@@ -68,4 +68,4 @@ services:
   group-service:
     image: triglby/group-service
 volumes:
-mongo:
+  mongo:
